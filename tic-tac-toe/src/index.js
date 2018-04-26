@@ -66,29 +66,31 @@ class Game extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			square: Array(9).fill(null),
+			history: [{square: Array(9).fill(null)}],
 			xIsNext : true,
 		}
 	}
 	
 	handleClick (i){
-		if (calculateWinner(this.state.square)) {
+		if (calculateWinner(this.state.history[this.state.history.length -1].square)) {
 			return;
 		}
-		
-		let square= this.state.square.slice();
+		let square= this.state.history[this.state.history.length -1].square.slice();
 		square[i] = this.state.xIsNext ? "X":"O";
-		this.setState({square:square, xIsNext : !this.state.xIsNext});
+		let newhistory = this.state.history.concat({square:square});
+		alert(newhistory);
+		this.setState({history:newhistory, xIsNext : !this.state.xIsNext});
 	}
 	
 	
 	render() {
-		
+		const history = this.state.history
+		const current = history[history.length-1];
 		return (
 		<div> 
 			
-			<Board square={this.state.square} 
-					xIsNext = {this.state.square} 
+			<Board square={current.square} 
+					xIsNext = {this.state.xIsNext} 
 					handleClick = {(n)=>this.handleClick(n)}/>
 		</div>
 		)
