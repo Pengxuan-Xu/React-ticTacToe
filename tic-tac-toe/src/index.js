@@ -68,30 +68,49 @@ class Game extends React.Component {
 		this.state = {
 			history: [{square: Array(9).fill(null)}],
 			xIsNext : true,
+			stepNumber: 0,
 		}
 	}
 	
 	handleClick (i){
-		if (calculateWinner(this.state.history[this.state.history.length -1].square)) {
+		const history = this.state.history.slice(0, this.state.stepNumber + 1);
+		const current = history[history.length-1];
+		
+		if (calculateWinner(current.square)) {
 			return;
 		}
 		let square= this.state.history[this.state.history.length -1].square.slice();
 		square[i] = this.state.xIsNext ? "X":"O";
 		let newhistory = this.state.history.concat({square:square});
-		alert(newhistory);
-		this.setState({history:newhistory, xIsNext : !this.state.xIsNext});
+		this.setState({history:newhistory, xIsNext : !this.state.xIsNext, stepNumber: history.length});
 	}
+	
+	jumpTo(step) {
+		this.setState({
+		  stepNumber: step,
+		  xIsNext: (step % 2) === 0,
+		});
+	}
+		
 	
 	
 	render() {
-		const history = this.state.history
+		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length-1];
+		const moves = history.map( (step, move) => {
+			const note = 'Goto ' + move;
+			return (
+			<li key={note}> <button onClick={() => this.jumpTo(move)} >{note}</button> </li>
+			);
+		});
+		
 		return (
 		<div> 
 			
 			<Board square={current.square} 
 					xIsNext = {this.state.xIsNext} 
 					handleClick = {(n)=>this.handleClick(n)}/>
+			<ol> {moves} </ol>
 		</div>
 		)
 	};
